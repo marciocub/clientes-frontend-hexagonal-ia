@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthService from '../../services/AuthService';
-import { mensajeDeError } from '../../services/AlumnoService';
+import { mensajeDeError } from '../../services/ClienteService';
 import '../../styles/Login.css';
 
 /**
@@ -35,7 +35,7 @@ function Login({ onLogin, onIrARegistro }) {
     <div className="auth-contenedor">
       <form className="auth-tarjeta" onSubmit={enviar}>
         <h2>🔐 Iniciar sesión</h2>
-        <p className="auth-subtitulo">Ingresá para administrar los alumnos</p>
+        <p className="auth-subtitulo">Ingresá para administrar los clientes</p>
 
         {error && <div className="alerta alerta-error">{error}</div>}
 

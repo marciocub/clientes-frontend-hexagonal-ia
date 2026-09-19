@@ -1,8 +1,8 @@
 {
-  "name": "alumnos-frontend-hexagonal",
+  "name": "clientes-frontend-hexagonal",
   "version": "1.0.0",
   "private": true,
-  "description": "Frontend React para el ABM de Alumnos con JWT (backend hexagonal en puerto 8080)",
+  "description": "Frontend React para el ABM de Clientes con JWT (backend hexagonal en puerto 8080)",
   "dependencies": {
     "axios": "^1.7.9",
     "react": "^18.3.1",

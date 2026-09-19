@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import AlumnoService, { mensajeDeError } from '../../services/AlumnoService';
-import '../../styles/AlumnoList.css';
+import ClienteService, { mensajeDeError } from '../../services/ClienteService';
+import '../../styles/ClienteList.css';
 
 /**
- * Tabla de alumnos con acciones editar/eliminar y filtro por estado.
+ * Tabla de clientes con acciones editar/eliminar y filtro por estado.
  * El listado se recarga al cambiar `refrescar` (tras crear/guardar/eliminar).
  */
-function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
-  const [alumnos, setAlumnos] = useState([]);
+function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
+  const [clientes, setClientes] = useState([]);
   const [filtro, setFiltro] = useState('TODOS');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
@@ -25,9 +25,9 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
     try {
       const respuesta =
         filtro === 'TODOS'
-          ? await AlumnoService.listar()
-          : await AlumnoService.listarPorEstado(filtro);
-      setAlumnos(respuesta.data);
+          ? await ClienteService.listar()
+          : await ClienteService.listarPorEstado(filtro);
+      setClientes(respuesta.data);
     } catch (err) {
       // 403 = sesión no válida -> volver al login
       if (err.response && err.response.status === 403 && onSesionExpirada) {
@@ -40,18 +40,18 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
     }
   };
 
-  const eliminar = async (alumno) => {
+  const eliminar = async (cliente) => {
     setError('');
     setMensaje('');
-    if (!window.confirm(`¿Eliminar al alumno "${alumno.nombre} ${alumno.apellido}"?`)) {
+    if (!window.confirm(`¿Eliminar al cliente "${cliente.nombre} ${cliente.apellido}"?`)) {
       return;
     }
     try {
-      await AlumnoService.eliminar(alumno.id);
-      setMensaje(`Alumno #${alumno.id} eliminado correctamente`);
+      await ClienteService.eliminar(cliente.id);
+      setMensaje(`Cliente #${cliente.id} eliminado correctamente`);
     } catch (err) {
       if (err.response && err.response.status === 404) {
-        setError('El alumno ya no existe (404). Actualizando el listado...');
+        setError('El cliente ya no existe (404). Actualizando el listado...');
       } else {
         setError(mensajeDeError(err));
       }
@@ -70,9 +70,9 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
   };
 
   return (
-    <section className="tarjeta lista-alumnos">
+    <section className="tarjeta lista-clientes">
       <div className="lista-cabecera">
-        <h2>📋 Listado de alumnos</h2>
+        <h2>📋 Listado de clientes</h2>
         <div className="filtros">
           <label>Filtrar por estado: </label>
           <select value={filtro} onChange={(e) => setFiltro(e.target.value)}>
@@ -85,13 +85,13 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
 
       {error && <div className="alerta alerta-error">{error}</div>}
       {mensaje && <div className="alerta alerta-ok">{mensaje}</div>}
-      {cargando && <p className="cargando">Cargando alumnos...</p>}
+      {cargando && <p className="cargando">Cargando clientes...</p>}
 
-      {!cargando && alumnos.length === 0 && !error && (
-        <p className="vacio">No hay alumnos para mostrar. Creá el primero con el formulario de arriba 👆</p>
+      {!cargando && clientes.length === 0 && !error && (
+        <p className="vacio">No hay clientes para mostrar. Creá el primero con el formulario de arriba 👆</p>
       )}
 
-      {!cargando && alumnos.length > 0 && (
+      {!cargando && clientes.length > 0 && (
         <div className="tabla-contenedor">
           <table>
             <thead>
@@ -107,24 +107,24 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
               </tr>
             </thead>
             <tbody>
-              {alumnos.map((alumno) => (
-                <tr key={alumno.id}>
-                  <td>{alumno.id}</td>
-                  <td>{alumno.nombre}</td>
-                  <td>{alumno.apellido}</td>
-                  <td>{alumno.email}</td>
-                  <td>{alumno.telefono || '-'}</td>
+              {clientes.map((cliente) => (
+                <tr key={cliente.id}>
+                  <td>{cliente.id}</td>
+                  <td>{cliente.nombre}</td>
+                  <td>{cliente.apellido}</td>
+                  <td>{cliente.email}</td>
+                  <td>{cliente.telefono || '-'}</td>
                   <td>
-                    <span className={`badge ${alumno.estado === 'ACTIVO' ? 'badge-activo' : 'badge-inactivo'}`}>
-                      {alumno.estado}
+                    <span className={`badge ${cliente.estado === 'ACTIVO' ? 'badge-activo' : 'badge-inactivo'}`}>
+                      {cliente.estado}
                     </span>
                   </td>
-                  <td>{formatearFecha(alumno.fechaInscripcion)}</td>
+                  <td>{formatearFecha(cliente.fechaInscripcion)}</td>
                   <td className="acciones">
-                    <button className="btn btn-editar" onClick={() => onEditar(alumno)}>
+                    <button className="btn btn-editar" onClick={() => onEditar(cliente)}>
                       Editar
                     </button>
-                    <button className="btn btn-peligro" onClick={() => eliminar(alumno)}>
+                    <button className="btn btn-peligro" onClick={() => eliminar(cliente)}>
                       Eliminar
                     </button>
                   </td>
@@ -138,4 +138,4 @@ function AlumnoList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
   );
 }
 
-export default AlumnoList;
+export default ClienteList;
