@@ -1,0 +1,218 @@
+/* ============ Estilos globales del ABM de Alumnos (moderno y responsive) ============ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primario: #2456a6;
+  --primario-oscuro: #1a3f7e;
+  --peligro: #d64545;
+  --peligro-oscuro: #b03434;
+  --exito: #2e9e5b;
+  --fondo: #f2f5fa;
+  --tarjeta: #ffffff;
+  --texto: #243342;
+  --suave: #6b7a8c;
+  --borde: #dfe6ee;
+  --sombra: 0 6px 18px rgba(30, 58, 95, 0.12);
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(160deg, #eef3fb 0%, #dfe8f5 100%);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ---------- Layout general ---------- */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--primario) 0%, var(--primario-oscuro) 100%);
+  color: #fff;
+  padding: 18px 22px;
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.app-usuario {
+  opacity: 0.9;
+  font-size: 0.95rem;
+  flex: 1;
+  text-align: right;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.app-footer {
+  text-align: center;
+  color: var(--suave);
+  font-size: 0.85rem;
+  padding: 10px 0 20px;
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+  background: var(--tarjeta);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  padding: 20px 22px;
+  border: 1px solid var(--borde);
+}
+
+.tarjeta h2 {
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  color: var(--primario-oscuro);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primario {
+  background: var(--primario);
+}
+
+.btn-primario:hover:not(:disabled) {
+  background: var(--primario-oscuro);
+}
+
+.btn-secundario {
+  background: var(--suave);
+}
+
+.btn-secundario:hover:not(:disabled) {
+  background: #556578;
+}
+
+.btn-editar {
+  background: #2f8fc9;
+  padding: 7px 12px;
+  font-size: 0.85rem;
+}
+
+.btn-editar:hover:not(:disabled) {
+  background: #2273a5;
+}
+
+.btn-peligro {
+  background: var(--peligro);
+}
+
+.btn-peligro:hover:not(:disabled) {
+  background: var(--peligro-oscuro);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primario);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  color: var(--primario-oscuro);
+}
+
+/* ---------- Alertas ---------- */
+.alerta {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+}
+
+.alerta-error {
+  background: #fdecec;
+  color: #a93030;
+  border-color: #f5c6c6;
+}
+
+.alerta-ok {
+  background: #e8f7ee;
+  color: #1f7a44;
+  border-color: #bfe8cd;
+}
+
+/* ---------- Formularios ---------- */
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--texto);
+  background: #fbfdff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primario);
+  box-shadow: 0 0 0 3px rgba(36, 86, 166, 0.15);
+}
+
+label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--suave);
+  margin-bottom: 5px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-usuario {
+    text-align: left;
+  }
+}

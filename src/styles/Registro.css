@@ -1,0 +1,7 @@
+/* ============ Pantalla de Registro ============ */
+/* Reutiliza los estilos de autenticación de Login.css */
+@import './Login.css';
+
+.auth-tarjeta {
+  max-width: 460px;
+}
