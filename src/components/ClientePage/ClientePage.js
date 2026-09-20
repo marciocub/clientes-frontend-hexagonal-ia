@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import ClienteService, { mensajeDeError } from '../../services/ClienteService';
+import ClienteModalForm from '../ClienteModalForm/ClienteModalForm';
 import '../../styles/ClienteList.css';
 
 /**
- * Tabla de clientes con acciones editar/eliminar y filtro por estado.
- * El listado se recarga al cambiar `refrescar` (tras crear/guardar/eliminar).
+ * ABM de clientes: grilla con filtro por estado, alta y edicion en pop-up (modal),
+ * eliminacion con confirmacion.
  */
-function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
+function ClientePage({ onSesionExpirada }) {
   const [clientes, setClientes] = useState([]);
   const [filtro, setFiltro] = useState('TODOS');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
-
-  useEffect(() => {
-    cargar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refrescar, filtro]);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [clienteEditando, setClienteEditando] = useState(null);
 
   const cargar = async () => {
     setError('');
@@ -29,7 +27,6 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
           : await ClienteService.listarPorEstado(filtro);
       setClientes(respuesta.data);
     } catch (err) {
-      // 403 = sesión no válida -> volver al login
       if (err.response && err.response.status === 403 && onSesionExpirada) {
         onSesionExpirada();
         return;
@@ -39,6 +36,11 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
       setCargando(false);
     }
   };
+
+  useEffect(() => {
+    cargar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro]);
 
   const eliminar = async (cliente) => {
     setError('');
@@ -56,8 +58,29 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
         setError(mensajeDeError(err));
       }
     } finally {
-      onCambio(); // recarga la tabla
+      cargar();
     }
+  };
+
+  const abrirNuevo = () => {
+    setClienteEditando(null);
+    setModalAbierto(true);
+  };
+
+  const abrirEdicion = (cliente) => {
+    setClienteEditando(cliente);
+    setModalAbierto(true);
+  };
+
+  const cerrarModal = () => {
+    setModalAbierto(false);
+    setClienteEditando(null);
+  };
+
+  const trasGuardado = () => {
+    cerrarModal();
+    cargar();
+    setMensaje('Cliente guardado correctamente');
   };
 
   const formatearFecha = (iso) => {
@@ -80,6 +103,9 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
             <option value="ACTIVO">ACTIVO</option>
             <option value="INACTIVO">INACTIVO</option>
           </select>
+          <button className="btn btn-primario" onClick={abrirNuevo}>
+            ➕ Nuevo cliente
+          </button>
         </div>
       </div>
 
@@ -88,7 +114,7 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
       {cargando && <p className="cargando">Cargando clientes...</p>}
 
       {!cargando && clientes.length === 0 && !error && (
-        <p className="vacio">No hay clientes para mostrar. Creá el primero con el formulario de arriba 👆</p>
+        <p className="vacio">No hay clientes para mostrar. Creá el primero con el botón "➕ Nuevo cliente" 👆</p>
       )}
 
       {!cargando && clientes.length > 0 && (
@@ -121,7 +147,7 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
                   </td>
                   <td>{formatearFecha(cliente.fechaInscripcion)}</td>
                   <td className="acciones">
-                    <button className="btn btn-editar" onClick={() => onEditar(cliente)}>
+                    <button className="btn btn-editar" onClick={() => abrirEdicion(cliente)}>
                       Editar
                     </button>
                     <button className="btn btn-peligro" onClick={() => eliminar(cliente)}>
@@ -134,8 +160,16 @@ function ClienteList({ refrescar, onEditar, onCambio, onSesionExpirada }) {
           </table>
         </div>
       )}
+
+      {modalAbierto && (
+        <ClienteModalForm
+          clienteAEditar={clienteEditando}
+          onGuardado={trasGuardado}
+          onCerrar={cerrarModal}
+        />
+      )}
     </section>
   );
 }
 
-export default ClienteList;
+export default ClientePage;

@@ -1,0 +1,72 @@
+/* ============ Pop-up (modal) generico para altas y ediciones ============ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 33, 50, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+  animation: modal-fade 0.15s ease;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-contenido {
+  background: var(--tarjeta, #ffffff);
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(15, 30, 55, 0.35);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-subir 0.18s ease;
+}
+
+@keyframes modal-subir {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--borde, #dfe6ee);
+  background: linear-gradient(135deg, var(--primario, #2456a6) 0%, var(--primario-oscuro, #1a3f7e) 100%);
+  border-radius: 14px 14px 0 0;
+}
+
+.modal-cabecera h2 {
+  color: #fff;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.modal-cerrar {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modal-cerrar:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-cuerpo {
+  padding: 20px 22px;
+}

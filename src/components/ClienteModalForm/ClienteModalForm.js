@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+import Modal from '../Modal/Modal';
 import ClienteService, { mensajeDeError } from '../../services/ClienteService';
 import '../../styles/ClienteForm.css';
 
 /**
- * Formulario para crear y editar clientes, con validaciones.
- * Errores manejados: 400 (validaciones del backend), 409 (email duplicado),
- * otros (conexión). El mensaje del backend se muestra en la alerta.
+ * Pop-up de alta/edicion de clientes (dentro del modal generico).
+ * Errores manejados: 400 (validaciones del backend), 409 (email duplicado).
  */
-function ClienteForm({ clienteAEditar, onGuardado, onCancelar }) {
+function ClienteModalForm({ clienteAEditar, onGuardado, onCerrar }) {
   const editando = !!clienteAEditar;
   const [nombre, setNombre] = useState(editando ? clienteAEditar.nombre : '');
   const [apellido, setApellido] = useState(editando ? clienteAEditar.apellido : '');
@@ -44,9 +44,7 @@ function ClienteForm({ clienteAEditar, onGuardado, onCancelar }) {
   };
 
   return (
-    <section className="tarjeta form-cliente">
-      <h2>{editando ? `✏️ Editar cliente #${clienteAEditar.id}` : '➕ Nuevo cliente'}</h2>
-
+    <Modal titulo={editando ? `✏️ Editar cliente #${clienteAEditar.id}` : '➕ Nuevo cliente'} onCerrar={onCerrar}>
       {error && <div className="alerta alerta-error">{error}</div>}
 
       <form onSubmit={enviar} className="form-grilla">
@@ -113,15 +111,13 @@ function ClienteForm({ clienteAEditar, onGuardado, onCancelar }) {
           <button type="submit" className="btn btn-primario" disabled={cargando}>
             {cargando ? 'Guardando...' : editando ? 'Guardar cambios' : 'Crear cliente'}
           </button>
-          {editando && (
-            <button type="button" className="btn btn-secundario" onClick={onCancelar}>
-              Cancelar
-            </button>
-          )}
+          <button type="button" className="btn btn-secundario" onClick={onCerrar}>
+            Cancelar
+          </button>
         </div>
       </form>
-    </section>
+    </Modal>
   );
 }
 
-export default ClienteForm;
+export default ClienteModalForm;
