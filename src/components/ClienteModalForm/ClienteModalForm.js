@@ -4,16 +4,15 @@ import ClienteService, { mensajeDeError } from '../../services/ClienteService';
 import '../../styles/ClienteForm.css';
 
 /**
- * Pop-up de alta/edicion de clientes (dentro del modal generico).
- * Errores manejados: 400 (validaciones del backend), 409 (email duplicado).
+ * Pop-up de alta/edición del cliente (Aggregate Root).
+ * El agregado solo tiene datos propios: nombre y CUIT.
+ * Las tarjetas y facturas se administran desde el detalle (ClienteDetalle).
+ * Errores manejados: 400 (validaciones del backend), 404, 403 (sesión).
  */
 function ClienteModalForm({ clienteAEditar, onGuardado, onCerrar }) {
   const editando = !!clienteAEditar;
-  const [nombre, setNombre] = useState(editando ? clienteAEditar.nombre : '');
-  const [apellido, setApellido] = useState(editando ? clienteAEditar.apellido : '');
-  const [email, setEmail] = useState(editando ? clienteAEditar.email : '');
-  const [telefono, setTelefono] = useState(editando ? clienteAEditar.telefono || '' : '');
-  const [estado, setEstado] = useState(editando ? clienteAEditar.estado : 'ACTIVO');
+  const [nombre, setNombre] = useState(editando ? clienteAEditar.nombre || '' : '');
+  const [cuit, setCuit] = useState(editando ? clienteAEditar.cuit || '' : '');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
@@ -23,10 +22,7 @@ function ClienteModalForm({ clienteAEditar, onGuardado, onCerrar }) {
     setCargando(true);
     const datos = {
       nombre: nombre.trim(),
-      apellido: apellido.trim(),
-      email: email.trim(),
-      telefono: telefono.trim() || null,
-      estado,
+      cuit: cuit.trim(),
     };
     try {
       if (editando) {
@@ -36,7 +32,7 @@ function ClienteModalForm({ clienteAEditar, onGuardado, onCerrar }) {
       }
       onGuardado();
     } catch (err) {
-      // 400: validaciones · 409: email duplicado · 403/401: sesión
+      // 400: validaciones (CUIT con formato inválido) · 404 · 403/401: sesión
       setError(mensajeDeError(err));
     } finally {
       setCargando(false);
@@ -49,62 +45,31 @@ function ClienteModalForm({ clienteAEditar, onGuardado, onCerrar }) {
 
       <form onSubmit={enviar} className="form-grilla">
         <div className="campo">
-          <label htmlFor="al-nombre">Nombre *</label>
+          <label htmlFor="cli-nombre">Nombre *</label>
           <input
-            id="al-nombre"
+            id="cli-nombre"
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            placeholder="Juan"
+            placeholder="Juan Pérez"
             maxLength={100}
             required
           />
         </div>
 
         <div className="campo">
-          <label htmlFor="al-apellido">Apellido *</label>
+          <label htmlFor="cli-cuit">CUIT *</label>
           <input
-            id="al-apellido"
+            id="cli-cuit"
             type="text"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-            placeholder="Perez"
-            maxLength={100}
+            value={cuit}
+            onChange={(e) => setCuit(e.target.value)}
+            placeholder="20-12345678-9"
+            maxLength={13}
+            pattern="\d{2}-?\d{8}-?\d{1}"
+            title="Formato 20-12345678-9 (o 20123456789)"
             required
           />
-        </div>
-
-        <div className="campo">
-          <label htmlFor="al-email">Email *</label>
-          <input
-            id="al-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="juan@escuela.com"
-            maxLength={100}
-            required
-          />
-        </div>
-
-        <div className="campo">
-          <label htmlFor="al-telefono">Teléfono</label>
-          <input
-            id="al-telefono"
-            type="tel"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
-            placeholder="2611234567"
-            maxLength={20}
-          />
-        </div>
-
-        <div className="campo">
-          <label htmlFor="al-estado">Estado</label>
-          <select id="al-estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
-            <option value="ACTIVO">ACTIVO</option>
-            <option value="INACTIVO">INACTIVO</option>
-          </select>
         </div>
 
         <div className="form-botones">

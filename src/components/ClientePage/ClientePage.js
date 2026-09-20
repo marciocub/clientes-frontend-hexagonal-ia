@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import ClienteService, { mensajeDeError } from '../../services/ClienteService';
 import ClienteModalForm from '../ClienteModalForm/ClienteModalForm';
+import ClienteDetalle from '../ClienteDetalle/ClienteDetalle';
 import '../../styles/ClienteList.css';
 
 /**
- * ABM de clientes: grilla con filtro por estado, alta y edicion en pop-up (modal),
- * eliminacion con confirmacion.
+ * ABM del AGREGADO Cliente:
+ * - Grilla con cada cliente (nombre, CUIT y cantidad de tarjetas/facturas).
+ * - Alta y edición en pop-up (ClienteModalForm).
+ * - Eliminación con confirmación (arrastra tarjetas y facturas en cascada).
+ * - "Ver" abre el detalle del agregado (ClienteDetalle) para administrar
+ *   tarjetas de crédito y facturas con items.
  */
 function ClientePage({ onSesionExpirada }) {
   const [clientes, setClientes] = useState([]);
-  const [filtro, setFiltro] = useState('TODOS');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
-  const [modalAbierto, setModalAbierto] = useState(false);
+  const [formAbierto, setFormAbierto] = useState(false);
   const [clienteEditando, setClienteEditando] = useState(null);
+  const [clienteDetalle, setClienteDetalle] = useState(null);
 
   const cargar = async () => {
     setError('');
-    setMensaje('');
     setCargando(true);
     try {
-      const respuesta =
-        filtro === 'TODOS'
-          ? await ClienteService.listar()
-          : await ClienteService.listarPorEstado(filtro);
+      const respuesta = await ClienteService.listar();
       setClientes(respuesta.data);
     } catch (err) {
       if (err.response && err.response.status === 403 && onSesionExpirada) {
@@ -40,12 +41,16 @@ function ClientePage({ onSesionExpirada }) {
   useEffect(() => {
     cargar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtro]);
+  }, []);
 
   const eliminar = async (cliente) => {
     setError('');
     setMensaje('');
-    if (!window.confirm(`¿Eliminar al cliente "${cliente.nombre} ${cliente.apellido}"?`)) {
+    if (
+      !window.confirm(
+        `¿Eliminar al cliente "${cliente.nombre}" (CUIT ${cliente.cuit})? También se eliminarán sus tarjetas y facturas.`
+      )
+    ) {
       return;
     }
     try {
@@ -64,45 +69,54 @@ function ClientePage({ onSesionExpirada }) {
 
   const abrirNuevo = () => {
     setClienteEditando(null);
-    setModalAbierto(true);
+    setFormAbierto(true);
   };
 
   const abrirEdicion = (cliente) => {
     setClienteEditando(cliente);
-    setModalAbierto(true);
+    setFormAbierto(true);
   };
 
-  const cerrarModal = () => {
-    setModalAbierto(false);
+  const cerrarForm = () => {
+    setFormAbierto(false);
     setClienteEditando(null);
   };
 
   const trasGuardado = () => {
-    cerrarModal();
+    cerrarForm();
     cargar();
     setMensaje('Cliente guardado correctamente');
   };
 
-  const formatearFecha = (iso) => {
-    if (!iso) return '-';
-    try {
-      return new Date(iso).toLocaleString('es-AR');
-    } catch {
-      return iso;
-    }
+  /** Refresca la fila del cliente cuando se agregan tarjetas o facturas. */
+  const trasCambioDeAgregado = (clienteActualizado) => {
+    setClientes((previos) =>
+      previos.map((cliente) => (cliente.id === clienteActualizado.id ? clienteActualizado : cliente))
+    );
+    setMensaje(`Agregado del cliente #${clienteActualizado.id} actualizado`);
   };
+
+  const formatearMonto = (monto) => {
+    if (monto === null || monto === undefined) return '-';
+    return Number(monto).toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  /** Suma de los límites de todas las tarjetas del cliente. */
+  const limiteAcumulado = (cliente) =>
+    (cliente.tarjetas || []).reduce((acumulado, tarjeta) => acumulado + Number(tarjeta.limiteCredito || 0), 0);
+
 
   return (
     <section className="tarjeta lista-clientes">
       <div className="lista-cabecera">
-        <h2>📋 Listado de clientes</h2>
+        <h2>👥 Clientes (agregado con tarjetas y facturas)</h2>
         <div className="filtros">
-          <label>Filtrar por estado: </label>
-          <select value={filtro} onChange={(e) => setFiltro(e.target.value)}>
-            <option value="TODOS">TODOS</option>
-            <option value="ACTIVO">ACTIVO</option>
-            <option value="INACTIVO">INACTIVO</option>
-          </select>
+          <button className="btn btn-secundario" onClick={cargar} disabled={cargando}>
+            🔄 Actualizar
+          </button>
           <button className="btn btn-primario" onClick={abrirNuevo}>
             ➕ Nuevo cliente
           </button>
@@ -124,11 +138,10 @@ function ClientePage({ onSesionExpirada }) {
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Estado</th>
-                <th>Inscripción</th>
+                <th>CUIT</th>
+                <th>Tarjetas</th>
+                <th>Límite acumulado</th>
+                <th>Facturas</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -137,16 +150,18 @@ function ClientePage({ onSesionExpirada }) {
                 <tr key={cliente.id}>
                   <td>{cliente.id}</td>
                   <td>{cliente.nombre}</td>
-                  <td>{cliente.apellido}</td>
-                  <td>{cliente.email}</td>
-                  <td>{cliente.telefono || '-'}</td>
+                  <td>{cliente.cuit}</td>
                   <td>
-                    <span className={`badge ${cliente.estado === 'ACTIVO' ? 'badge-activo' : 'badge-inactivo'}`}>
-                      {cliente.estado}
-                    </span>
+                    <span className="badge badge-activo">{(cliente.tarjetas || []).length}</span>
                   </td>
-                  <td>{formatearFecha(cliente.fechaInscripcion)}</td>
+                  <td>$ {formatearMonto(limiteAcumulado(cliente))}</td>
+                  <td>
+                    <span className="badge badge-inactivo">{(cliente.facturas || []).length}</span>
+                  </td>
                   <td className="acciones">
+                    <button className="btn btn-secundario" onClick={() => setClienteDetalle(cliente)}>
+                      Ver
+                    </button>
                     <button className="btn btn-editar" onClick={() => abrirEdicion(cliente)}>
                       Editar
                     </button>
@@ -161,11 +176,19 @@ function ClientePage({ onSesionExpirada }) {
         </div>
       )}
 
-      {modalAbierto && (
+      {formAbierto && (
         <ClienteModalForm
           clienteAEditar={clienteEditando}
           onGuardado={trasGuardado}
-          onCerrar={cerrarModal}
+          onCerrar={cerrarForm}
+        />
+      )}
+
+      {clienteDetalle && (
+        <ClienteDetalle
+          cliente={clienteDetalle}
+          onCambio={trasCambioDeAgregado}
+          onCerrar={() => setClienteDetalle(null)}
         />
       )}
     </section>

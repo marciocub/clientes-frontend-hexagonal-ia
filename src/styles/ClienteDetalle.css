@@ -1,0 +1,138 @@
+/* ============ Detalle del agregado Cliente (tarjetas + facturas) ============ */
+
+.detalle-datos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  background: #f6f9fd;
+  border: 1px solid #dfe6ee;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.detalle-datos > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detalle-etiqueta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7a8c;
+}
+
+.detalle-bloque {
+  margin-bottom: 20px;
+}
+
+.detalle-bloque-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.detalle-bloque-cabecera h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1a3f7e;
+}
+
+.detalle-vacio {
+  color: #6b7a8c;
+  font-size: 0.88rem;
+  margin: 0 0 10px;
+}
+
+.tabla-mini {
+  font-size: 0.85rem;
+}
+
+.tabla-mini th,
+.tabla-mini td {
+  padding: 7px 10px;
+}
+
+.tabla-items input {
+  width: 100%;
+  min-width: 70px;
+  padding: 6px 8px;
+}
+
+.tabla-items td {
+  white-space: normal;
+}
+
+.celda-subtotal {
+  font-weight: 600;
+  color: #1a3f7e;
+  white-space: nowrap;
+}
+
+.items-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+.items-cabecera h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #1a3f7e;
+}
+
+.total-estimado {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+  color: #1a3f7e;
+}
+
+.nota-total {
+  color: #6b7a8c;
+  font-size: 0.78rem;
+}
+
+.btn-mini {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.badge-bloqueada,
+.badge-pendiente {
+  background: #fff6e5;
+  color: #9a6100;
+  border: 1px solid #f2dfb8;
+}
+
+.tabla-items-anidada {
+  background: #fbfdff;
+  border: 1px solid #dfe6ee;
+  border-radius: 8px;
+}
+
+.fila-items td {
+  background: #fbfdff;
+  padding: 6px 10px 10px;
+}
+
+.tabla-items-anidada th {
+  background: #f1f5fb;
+  color: #33507e;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  position: static;
+}
+
+@media (max-width: 640px) {
+  .detalle-datos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -10,7 +10,8 @@ function HomePage({ onIrA, nombreUsuario }) {
       id: 'clientes',
       icono: '👥',
       titulo: 'ABM de Clientes',
-      descripcion: 'Alta, baja y modificación de clientes: nombre, apellido, email, teléfono y estado.',
+      descripcion:
+        'Agregado Cliente: alta, baja y modificación de clientes (nombre y CUIT) con sus tarjetas de crédito y facturas.',
     },
     {
       id: 'cuentas',

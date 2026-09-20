@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import '../../styles/Modal.css';
 
 /**
- * Pop-up (modal) generico reutilizable para altas y ediciones.
+ * Pop-up (modal) generico reutilizable para altas, ediciones y detalles.
  * - Overlay oscuro; clic fuera o tecla Escape cierran el modal.
- * - El contenido se pasa como children (el formulario de cada entidad).
+ * - El contenido se pasa como children (el formulario o la vista de cada entidad).
+ * - ancho="ancho" agranda el pop-up (se usa en el detalle del agregado cliente).
  */
-function Modal({ titulo, onCerrar, children }) {
+function Modal({ titulo, onCerrar, ancho, children }) {
   useEffect(() => {
     const manejarEscape = (e) => {
       if (e.key === 'Escape') {
@@ -24,7 +25,11 @@ function Modal({ titulo, onCerrar, children }) {
 
   return (
     <div className="modal-overlay" onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}>
-      <div className="modal-contenido" role="dialog" aria-modal="true">
+      <div
+        className={`modal-contenido ${ancho === 'ancho' ? 'modal-contenido-ancho' : ''}`}
+        role="dialog"
+        aria-modal="true"
+      >
         <div className="modal-cabecera">
           <h2>{titulo}</h2>
           <button type="button" className="modal-cerrar" onClick={onCerrar} aria-label="Cerrar">

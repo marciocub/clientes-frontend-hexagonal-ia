@@ -70,3 +70,8 @@
 .modal-cuerpo {
   padding: 20px 22px;
 }
+
+/* Variante ancha: detalle del agregado Cliente (tarjetas + facturas) */
+.modal-contenido-ancho {
+  max-width: 900px;
+}

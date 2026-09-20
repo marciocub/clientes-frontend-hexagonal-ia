@@ -2,11 +2,21 @@ import axios from 'axios';
 import AuthService from './AuthService';
 
 /**
- * Cliente Axios para el ABM de clientes con interceptor de JWT.
+ * Cliente Axios para el ABM del AGREGADO Cliente (tarjetas de crédito + facturas)
+ * con interceptor de JWT.
  *
  * - Request: agrega el header "Authorization: Bearer <token>" a cada petición.
  * - Response: si llega 401 (token inválido/expirado) hace logout automático
  *   y redirige al login.
+ *
+ * Endpoints del backend (hexagonal, puerto de entrada ClienteUseCase):
+ *   GET    /api/clientes
+ *   GET    /api/clientes/{id}
+ *   POST   /api/clientes
+ *   PUT    /api/clientes/{id}
+ *   DELETE /api/clientes/{id}
+ *   POST   /api/clientes/{id}/tarjetas   (regla de tope de límite en el dominio)
+ *   POST   /api/clientes/{id}/facturas   (total calculado por el dominio)
  */
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
@@ -49,10 +59,12 @@ export function mensajeDeError(error) {
 const ClienteService = {
   listar: () => api.get('/clientes'),
   obtenerPorId: (id) => api.get(`/clientes/${id}`),
-  listarPorEstado: (estado) => api.get(`/clientes/estado/${estado}`),
   crear: (cliente) => api.post('/clientes', cliente),
   actualizar: (id, cliente) => api.put(`/clientes/${id}`, cliente),
   eliminar: (id) => api.delete(`/clientes/${id}`),
+  // Métodos de negocio del agregado: tarjetas y facturas del cliente
+  agregarTarjeta: (id, tarjeta) => api.post(`/clientes/${id}/tarjetas`, tarjeta),
+  agregarFactura: (id, factura) => api.post(`/clientes/${id}/facturas`, factura),
 };
 
 export default ClienteService;
