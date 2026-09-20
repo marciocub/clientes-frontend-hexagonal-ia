@@ -1,13 +1,13 @@
-# alumnos-frontend-hexagonal-ia
+# clientes-frontend-hexagonal-ia
 
-Frontend **React 18** (CRA / `react-scripts`, JS puro sin TypeScript) para el **ABM de Alumnos con autenticación JWT**, consumiendo el backend hexagonal (`alumnos-backend-hexagonal-ia`) en `http://localhost:8080`.
+Frontend **React 18** (CRA / `react-scripts`, JS puro sin TypeScript) para el **ABM de Clientes con autenticación JWT**, consumiendo el backend hexagonal (`clientes-backend-hexagonal-ia`) en `http://localhost:8080`.
 
 ---
 
 ## 1. Estructura
 
 ```
-alumnos-frontend-hexagonal-ia/
+clientes-frontend-hexagonal-ia/
 ├── package.json                    # React 18.3 + react-scripts 5.0.1 + axios
 ├── public/
 │   └── index.html
@@ -17,19 +17,19 @@ alumnos-frontend-hexagonal-ia/
     ├── components/
     │   ├── Login/Login.js          # Formulario login + link a registro (401 → mensaje)
     │   ├── Registro/Registro.js    # Formulario de registro (409 email duplicado → mensaje)
-    │   ├── AlumnoForm/AlumnoForm.js# Formulario crear/editar con validaciones (400/409)
-    │   └── AlumnoList/AlumnoList.js# Tabla con editar/eliminar y filtro por estado
+    │   ├── ClienteForm/ClienteForm.js# Formulario crear/editar con validaciones (400/409)
+    │   └── ClienteList/ClienteList.js# Tabla con editar/eliminar y filtro por estado
     ├── services/
     │   ├── AuthService.js          # login, registro, saveToken, getToken (localStorage),
     │   │                           # logout, isAuthenticated
-    │   └── AlumnoService.js        # Axios con interceptor que agrega
+    │   └── ClienteService.js        # Axios con interceptor que agrega
     │                               # "Authorization: Bearer <token>" + logout automático en 401
     └── styles/                     # CSS moderno y responsive
         ├── App.css                 # Globales: layout, header, botones, alertas, formularios
         ├── Login.css               # Pantalla de autenticación
         ├── Registro.css            # (reutiliza Login.css)
-        ├── AlumnoForm.css          # Grilla del formulario
-        └── AlumnoList.css          # Tabla, badges de estado, responsive
+        ├── ClienteForm.css          # Grilla del formulario
+        └── ClienteList.css          # Tabla, badges de estado, responsive
 ```
 
 ## 2. Comportamiento
@@ -50,13 +50,13 @@ alumnos-frontend-hexagonal-ia/
 | 400 | Validaciones (campos vacíos, email mal formado, estado inválido) | Mensaje en el formulario |
 | 401 | Credenciales incorrectas o token inválido/expirado | Mensaje / logout automático |
 | 403 | Sin sesión válida en ruta protegida | Vuelve al login |
-| 404 | Alumno inexistente | Mensaje + recarga del listado |
-| 409 | Email duplicado (registro o alumno) | Mensaje en el formulario |
+| 404 | Cliente inexistente | Mensaje + recarga del listado |
+| 409 | Email duplicado (registro o cliente) | Mensaje en el formulario |
 
 ## 4. Ejecución
 
 ```powershell
-# Desde d:\desarrollo\repo\alumnos-frontend-hexagonal-ia
+# Desde d:\desarrollo\repo\clientes-frontend-hexagonal-ia
 npm install    # solo la primera vez
 npm start      # -> http://localhost:3000
 ```

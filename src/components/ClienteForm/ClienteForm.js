@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import AlumnoService, { mensajeDeError } from '../../services/AlumnoService';
-import '../../styles/AlumnoForm.css';
+import ClienteService, { mensajeDeError } from '../../services/ClienteService';
+import '../../styles/ClienteForm.css';
 
 /**
- * Formulario para crear y editar alumnos, con validaciones.
+ * Formulario para crear y editar clientes, con validaciones.
  * Errores manejados: 400 (validaciones del backend), 409 (email duplicado),
  * otros (conexión). El mensaje del backend se muestra en la alerta.
  */
-function AlumnoForm({ alumnoAEditar, onGuardado, onCancelar }) {
-  const editando = !!alumnoAEditar;
-  const [nombre, setNombre] = useState(editando ? alumnoAEditar.nombre : '');
-  const [apellido, setApellido] = useState(editando ? alumnoAEditar.apellido : '');
-  const [email, setEmail] = useState(editando ? alumnoAEditar.email : '');
-  const [telefono, setTelefono] = useState(editando ? alumnoAEditar.telefono || '' : '');
-  const [estado, setEstado] = useState(editando ? alumnoAEditar.estado : 'ACTIVO');
+function ClienteForm({ clienteAEditar, onGuardado, onCancelar }) {
+  const editando = !!clienteAEditar;
+  const [nombre, setNombre] = useState(editando ? clienteAEditar.nombre : '');
+  const [apellido, setApellido] = useState(editando ? clienteAEditar.apellido : '');
+  const [email, setEmail] = useState(editando ? clienteAEditar.email : '');
+  const [telefono, setTelefono] = useState(editando ? clienteAEditar.telefono || '' : '');
+  const [estado, setEstado] = useState(editando ? clienteAEditar.estado : 'ACTIVO');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
@@ -30,9 +30,9 @@ function AlumnoForm({ alumnoAEditar, onGuardado, onCancelar }) {
     };
     try {
       if (editando) {
-        await AlumnoService.actualizar(alumnoAEditar.id, datos);
+        await ClienteService.actualizar(clienteAEditar.id, datos);
       } else {
-        await AlumnoService.crear(datos);
+        await ClienteService.crear(datos);
       }
       onGuardado();
     } catch (err) {
@@ -44,8 +44,8 @@ function AlumnoForm({ alumnoAEditar, onGuardado, onCancelar }) {
   };
 
   return (
-    <section className="tarjeta form-alumno">
-      <h2>{editando ? `✏️ Editar alumno #${alumnoAEditar.id}` : '➕ Nuevo alumno'}</h2>
+    <section className="tarjeta form-cliente">
+      <h2>{editando ? `✏️ Editar cliente #${clienteAEditar.id}` : '➕ Nuevo cliente'}</h2>
 
       {error && <div className="alerta alerta-error">{error}</div>}
 
@@ -111,7 +111,7 @@ function AlumnoForm({ alumnoAEditar, onGuardado, onCancelar }) {
 
         <div className="form-botones">
           <button type="submit" className="btn btn-primario" disabled={cargando}>
-            {cargando ? 'Guardando...' : editando ? 'Guardar cambios' : 'Crear alumno'}
+            {cargando ? 'Guardando...' : editando ? 'Guardar cambios' : 'Crear cliente'}
           </button>
           {editando && (
             <button type="button" className="btn btn-secundario" onClick={onCancelar}>
@@ -124,4 +124,4 @@ function AlumnoForm({ alumnoAEditar, onGuardado, onCancelar }) {
   );
 }
 
-export default AlumnoForm;
+export default ClienteForm;

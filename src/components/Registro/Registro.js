@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthService from '../../services/AuthService';
-import { mensajeDeError } from '../../services/AlumnoService';
+import { mensajeDeError } from '../../services/ClienteService';
 import '../../styles/Registro.css';
 
 /**
